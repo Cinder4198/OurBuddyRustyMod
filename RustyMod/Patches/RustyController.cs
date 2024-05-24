@@ -107,22 +107,26 @@ public class RustyController : MonoBehaviour
 	private void Update()
 	{
 		try{
+
+			bool isAggro = RadMechAI.currentBehaviourState.name == "Fly";
+
 			if(RadMechAI.spotlight.activeSelf){
 			RadMechAI.spotlight.SetActive(false);
 			}
 
 			try{
 
-				if(RadMechAI.isAlerted && !rustyAudioSource.isPlaying) {
+				if(isAggro && !rustyAudioSource.isPlaying) {
 					rustyAudioSource.Play();
 				}
-				if(!RadMechAI.isAlerted && rustyAudioSource.isPlaying) {
+				if(!isAggro && rustyAudioSource.isPlaying) {
 					rustyAudioSource.Pause();
 				}
-				RustyModBase.mls.LogInfo("RAD MECH ALERT: " + RadMechAI.isAlerted);
+				//RustyModBase.mls.LogInfo("RAD MECH ALERT: " + RadMechAI.isAlerted);
+				//RustyModBase.mls.LogInfo("RAD MECH ALERT 2: " + RadMechAI.currentBehaviourState.name);
 
 
-				if(RadMechAI.isAlerted) {
+				if(isAggro) {
 					if(voiceCooldown > 0) --voiceCooldown;
 					else {
 						if(new System.Random().Next(1, 21) == 1) {
@@ -226,7 +230,7 @@ public class RustyController : MonoBehaviour
 		}catch(Exception ex) {
 			RustyModBase.mls.LogError("Audio source errer: " + ex);
 		}
-		RustyModBase.mls.LogInfo("RUSYT AUDIO SOURCE: " + rustyAudioSource.name);
+		//RustyModBase.mls.LogInfo("RUSYT AUDIO SOURCE: " + rustyAudioSource.name);
 
 		try {
 		Vector3 vector = new Vector3(
@@ -271,7 +275,7 @@ public class RustyController : MonoBehaviour
 	}
 
 	private void LoadSounds() {
-		string voiceFolder = Path.Join(RustyModBase.soundFolder, "voice");
+		string voiceFolder = RustyModBase.soundFolder;
 
 		voiceLines  = new List<AudioClip>{};
 

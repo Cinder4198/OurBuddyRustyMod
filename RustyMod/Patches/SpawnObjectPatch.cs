@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -6,34 +7,52 @@ using BepInEx.Logging;
 using HarmonyLib;
 using RustyMod;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [HarmonyPatch]
 internal class SpawnObjectPatch
 {
-	[HarmonyPatch(typeof(RoundManager), "SpawnNestObjectForOutsideEnemy")]
+	[HarmonyPatch(typeof(RoundManager), "SyncNestSpawnPositionsClientRpc")]
 	[HarmonyPostfix]
-	public static void GetMapObject(RoundManager __instance, EnemyType enemyType){
+	public static void GetMapObject(RoundManager __instance){
 
-		if(enemyType.enemyName != "RadMech") return;
+		//if(enemyType.enemyName != "RadMech") return;
 
         try{
 
 			RustyModBase.mls.LogInfo("Patching RadMech spawn");
 
-			List<EnemyAINestSpawnObject> spawnObjects = __instance.enemyNestSpawnObjects;
+			RustyModBase.mls.LogInfo("Testing testing: " + __instance.enemyNestSpawnObjects.Count);
 
-			foreach(EnemyAINestSpawnObject obj in spawnObjects) {
-				
-				RustyModBase.mls.LogInfo("Outside Object: " + obj.enemyType);
+			List<EnemyAINestSpawnObject> gameObjects = __instance.enemyNestSpawnObjects;
+			
+
+			foreach(EnemyAINestSpawnObject obj in gameObjects) {
+
+				RustyModBase.mls.LogInfo("Game Object: " + obj.name);
 
 			}
 
-            EnemyAINestSpawnObject gameObject = __instance.enemyNestSpawnObjects.Last();
+			/*foreach(GameObject obj in gameObjects) {
+				RustyModBase.mls.LogInfo("Object Name: " + obj.name);
+				if(obj.transform.GetComponent<EnemyAINestSpawnObject>()) spawnObjects.Add(obj.transform.GetComponent<EnemyAINestSpawnObject>());
+			}*/
+
+			foreach(EnemyAINestSpawnObject obj in gameObjects) {
+				
+				RustyModBase.mls.LogInfo("Outside Object: " + obj.enemyType);
+
+				if(obj.enemyType.enemyName != "RadMech") continue;
+
+
+
+            EnemyAINestSpawnObject gameObject = obj;
 
             Renderer[] componentsInChildren;
+
 		    try{
                 //HideRadMechModel
-		    	componentsInChildren = __instance.enemyNestSpawnObjects.Last().transform.Find("MeshContainer").GetComponentsInChildren<Renderer>();
+		    	componentsInChildren = obj.transform.Find("MeshContainer").GetComponentsInChildren<Renderer>();
 
 		        //RustyModBase.mls.LogInfo("RadMech model parts:\n");
 		        //foreach(Renderer obj in componentsInChildren[0].GetComponentsInChildren<Renderer>()) {
@@ -44,7 +63,7 @@ internal class SpawnObjectPatch
 		        //}
 		
 		        componentsInChildren[0].enabled = false;
-				__instance.enemyNestSpawnObjects.Last().GetComponentInChildren<ScanNodeProperties>().headerText = "STEEL HAZE /\nV.IV Rusty";
+				obj.GetComponentInChildren<ScanNodeProperties>().headerText = "STEEL HAZE /\nV.IV Rusty";
 
 		
 		        }catch(Exception ex) {
@@ -58,7 +77,17 @@ internal class SpawnObjectPatch
 
 		    GameObject BaseRustyObject = UnityEngine.Object.Instantiate<GameObject>(assets, gameObject.transform);
 		    BaseRustyObject.name = "RustyModel";
+
+			RustyModBase.mls.LogInfo("Rusty Position: " + BaseRustyObject.transform.position);
+			RustyModBase.mls.LogInfo("Old Bird Position: " + gameObject.transform.position);
+
 			BaseRustyObject.transform.localScale = new Vector3( 0.6f, 0.6f, 0.6f);
+			//BaseRustyObject.transform.localPosition = gameObject.transform.localPosition;
+			RustyModBase.mls.LogInfo("Rusty Position 2: " + BaseRustyObject.transform.localPosition);
+			RustyModBase.mls.LogInfo("Old Bird Position 2: " + gameObject.transform.localPosition);
+			//BaseRustyObject.transform.rotation = gameObject.transform.rotation;
+
+			}
 
             }catch(Exception ex) {
                 RustyModBase.mls.LogError("Spawn Object Error: " + ex);
