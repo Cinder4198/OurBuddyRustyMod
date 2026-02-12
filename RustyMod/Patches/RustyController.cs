@@ -3,18 +3,8 @@
 // GokuBracken.Scripts.GokuController
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using BepInEx.Logging;
-using LC_API.BundleAPI;
-using RustyMod;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
-using System.Collections;
-using GameNetcodeStuff;
-using Unity.Netcode;
-using UnityEngine.AI;
 using LCSoundTool;
-using System.IO;
 
 public class RustyController : MonoBehaviour
 {
@@ -126,15 +116,21 @@ public class RustyController : MonoBehaviour
 				//RustyModBase.mls.LogInfo("RAD MECH ALERT 2: " + RadMechAI.currentBehaviourState.name);
 
 
+				//RustyModBase.mls.LogInfo("Rusty Voice Timer: " + voiceCooldown);
+
 				if(isAggro) {
+					
 					if(voiceCooldown > 0) --voiceCooldown;
-					else {
-						if(new System.Random().Next(1, 21) == 1) {
+					else
+					{
+						int randomVal = new System.Random().Next(1, RustyModBase.BoundConfig.fastVoiceCooldown.Value ? 21 : 301);  //21);
+						//RustyModBase.mls.LogDebug("Random voiceline roll; " + randomVal);
+						if(randomVal == 1) {
 
 							int playedVoiceInt = new System.Random().Next(1, voiceLines.Count);
 
 							rustyAudioSource.PlayOneShot(voiceLines[playedVoiceInt]);
-							voiceCooldown = 30;
+							voiceCooldown = RustyModBase.BoundConfig.fastVoiceCooldown.Value ? 30 : 450; //30;
 						}
 					}
 				}
@@ -219,7 +215,6 @@ public class RustyController : MonoBehaviour
 	private void CreateRustyModels()
 	{
 		try{ 
-
 		GameObject assets = Assets.GetAsset<GameObject>("rustyPrefab");
 
 		BaseRustyObject = UnityEngine.Object.Instantiate<GameObject>(assets, ((Component)this).gameObject.transform);
