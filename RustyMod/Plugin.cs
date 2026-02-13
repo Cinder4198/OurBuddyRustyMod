@@ -19,12 +19,12 @@ using UnityEngine.Video;
 [BepInPlugin(modGUID, modName, modVersion)]
 [BepInDependency("LCSoundTool", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("CustomSounds")]
-[BepInDependency("TerminalApi", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("TerminalApi")]
 public class RustyModBase : BaseUnityPlugin
 {
     private const string modGUID = "Eyasu.OurBuddyRusty";
     private const string modName = "Our Buddy Rusty";
-    private const string modVersion = "1.4";
+    private const string modVersion = "1.6";
 	//private static RustyModBase _instance;
 
 	private readonly Harmony Harmony = new Harmony(modGUID);
@@ -41,7 +41,6 @@ public class RustyModBase : BaseUnityPlugin
 
 	private void Awake()
 	{
-        
         mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
         mls.LogDebug("AMOGUS SUS");
         if (Instance == null) {
