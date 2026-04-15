@@ -19,7 +19,7 @@ using UnityEngine.Video;
 [BepInPlugin(modGUID, modName, modVersion)]
 [BepInDependency("LCSoundTool", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("CustomSounds")]
-[BepInDependency("TerminalApi")]
+[BepInDependency("atomic.terminalapi")]
 public class RustyModBase : BaseUnityPlugin
 {
     private const string modGUID = "Eyasu.OurBuddyRusty";
